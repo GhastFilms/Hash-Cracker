@@ -1,0 +1,8 @@
+[package]
+name = "hasher"
+version = "0.1.0"
+authors = ["GhastFilms <trent@g00glle.com>"]
+edition = "2018"
+
+[dependencies]
+sha2 = "0.8.0"
