@@ -6,8 +6,7 @@ mod hasher;
 use crate::hasher::*;
 
 
-pub fn check(mut h: &mut hasher::Hasher, prefix: &String) {
-    println!("{}", prefix);
+pub fn check(mut h: &mut hasher::Hasher, prefix: &String) -> bool {
     match h.check(&prefix) {
         Some(s) => {
             match h.output.write(s.as_bytes()) {
@@ -16,18 +15,22 @@ pub fn check(mut h: &mut hasher::Hasher, prefix: &String) {
             };
             if h.hashes.is_empty() {
                 println!("found all hashes, check {}\nexiting...", "results.txt");
-                return
+                return true;
             }
+            return false;
         },
-        None => {},
+        None => return false,
     };
 }
 
 
-pub fn print_all_k_length_rec(mut h: &mut hasher::Hasher, set: Vec<&'static str>, prefix: String, k: i64) {
+pub fn print_all_k_length_rec(mut h: &mut hasher::Hasher, set: Vec<&'static str>, prefix: String, k: i64) -> bool {
     if k == 0 {
-        check(&mut h, &prefix);
-        return
+        if check(&mut h, &prefix) {
+            return true;
+        };
+        
+        return false;
     } else if k == 1 {
         const THREAD_COUNT: i32 = 4;
         let x: i32 = (set.len() as i32 / THREAD_COUNT) as i32;
@@ -35,11 +38,15 @@ pub fn print_all_k_length_rec(mut h: &mut hasher::Hasher, set: Vec<&'static str>
 
         }
     } 
-    for x in 0..set.len() {
-        print_all_k_length_rec(&mut h, set.clone(), 
-            format!("{}{}", prefix, set[x as usize]), k-1
-        );
+    for x in set.iter() {
+        if print_all_k_length_rec(&mut h, set.clone(), 
+        //    format!("{}{}", prefix, set[x as usize]), k-1
+        format!("{}{}", prefix, x), k-1
+        ) {
+            return true;
+        };
     }
+    false
 }
 
 
@@ -51,7 +58,10 @@ fn get_hashes(name: String) -> Result<HashSet<String>, String> {
     let file = BufReader::new(file);
     let mut r: HashSet<String> = HashSet::new();
     for line in file.lines() {
-        r.insert(line.unwrap());
+        let l = line.unwrap();
+        if l != "".to_string() {
+            r.insert(l);
+        }
     };
     Ok(r)
 }
@@ -73,7 +83,7 @@ pub fn run() {
     };
             
     println!("{:?}", h.hashes);
-    let characters: Vec<&'static str> = get_ascii();
+    let characters: Vec<&'static str> = get_lowercase();
     // this is all of the ascii characters
     print_all_k_length_rec(&mut h, characters.clone(), String::from(""), COUNT);
 }

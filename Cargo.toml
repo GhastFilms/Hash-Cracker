@@ -1,5 +1,5 @@
 [package]
-name = "hasher"
+name = "hashcracker"
 version = "0.1.0"
 authors = ["GhastFilms <trent@g00glle.com>"]
 edition = "2018"

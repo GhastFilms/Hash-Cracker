@@ -16,7 +16,7 @@ mod tests {
         let s: String = "yeet".to_string();
         match h.check(&s) {
             Some(S) => {
-                assert_eq!(S, format!("{}: {}\n", Hasher::hash(&s), s));
+                assert_eq!(S, format!("{}: {}\n", Hasher::hash(s.clone()), s));
                 assert!(h.hashes.is_empty());
             },
             None => panic!("e"),
@@ -32,9 +32,9 @@ mod tests {
         ];
 
         for x in 0..hashes.len() {
-            assert_eq!(hashes[x].0, Hasher::hash(&hashes[x].1));
-            assert_ne!(String::from("yote"), Hasher::hash(&hashes[x].1));
-            assert_ne!(String::from(""), Hasher::hash(&hashes[x].1));
+            assert_eq!(hashes[x].0, Hasher::hash(hashes[x].1.clone()));
+            assert_ne!(String::from("yote"), Hasher::hash(hashes[x].1.clone()));
+            assert_ne!(String::from(""), Hasher::hash(hashes[x].1.clone()));
         }
     }
 
